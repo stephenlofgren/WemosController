@@ -1,3 +1,4 @@
+"""defines serializers for data models"""
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from Base.models import D1Mini, D1MiniCommand, D1MiniEvent, D1MiniReading
@@ -40,3 +41,5 @@ class D1MiniReadingSerializer(serializers.HyperlinkedModelSerializer):
         model = D1MiniReading
         fields = ('pk', 'device', 'reading_type', 'reading_value',
                   'reading_unit', 'date_reading')
+
+

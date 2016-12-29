@@ -12,6 +12,12 @@ PIN_LEVELS = (
     (0, 'Low')
 )
 
+SONOFF_PIN_IDS = (
+    (12, 'RELAY'),
+    (13, 'LED_BUILTIN'),
+    (14, 'DHT_PIN')
+)
+
 PIN_IDS = (
     (2, 'LED_BUILTIN'),
     (16, 'D0'),
@@ -178,3 +184,4 @@ class D1MiniReading(models.Model):
         return d1_mini_reading
 
     objects = D1MiniReadingManager()
+

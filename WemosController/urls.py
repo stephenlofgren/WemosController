@@ -29,7 +29,7 @@ admin.site.register(D1MiniEvent)
 admin.site.register(D1MiniReading)
 
 urlpatterns = [
-    url(r'[^/]*/admin/', admin.site.urls),
+    url(r'admin/', admin.site.urls),
 ]
 
 

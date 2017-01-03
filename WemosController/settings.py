@@ -119,8 +119,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "lib/python3.5/site-packages/rest_framework/static"),
+)
 
 LOGIN_URL = 'WemosController_login'
 LOGOUT_URL = 'WemosController_logout'
@@ -136,3 +139,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
 }
+
+# uncomment to support sub-site deployment
+#FORCE_SCRIPT_NAME = "/WemosController"

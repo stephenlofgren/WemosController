@@ -17,9 +17,7 @@ function startRefresh(){
 }
 
 function startX10Refresh(){
-    x10StatusPromise = getX10Status;
-
-    x10StatusPromise.then(function(result) {
+    getX10Status().then(function(result) {
         $('input[type=checkbox]').each(function () {
             x10Devices = this.getAttribute("x10DeviceIds");
             if(x10Devices != null){
@@ -57,27 +55,32 @@ function startEsp8266Refresh(){
     });
 }
 
-var getX10Status = new Promise(function (resolve, reject){
-    var csrftoken = getCookie('csrftoken');
-    var serviceUrl = "/x10/status/"
-    $.ajax({
-        url: serviceUrl,
-        headers: {"X-CSRFToken": csrftoken},
-        type: 'GET',
-        success: function(result) {
-            resolve(result.message);
-        },
-        error: function(result) {
-            reject(Error("Couldn't get x10Status'"));
-        }
+function getX10Status(){ 
+    return new Promise(function (resolve, reject){
+        var csrftoken = getCookie('csrftoken');
+        var serviceUrl = "/x10/status/"
+        $.ajax({
+            url: serviceUrl,
+            headers: {"X-CSRFToken": csrftoken},
+            type: 'GET',
+            success: function(result) {
+                resolve(result.message);
+            },
+            error: function(result) {
+                reject(Error("Couldn't get x10Status'"));
+            }
+        });
     });
-});
+}
 
 function setx10CheckboxValue(element, x10Status){
         var devs = x10Devices.split(",");
-        var stats = x10Status.split('');
+        var stats = x10Status.split('').reverse();
         devs.forEach(function(devId) { 
             var s = stats[parseInt(devs)-1];
+            if(s == 1){
+                element.checked = true;
+            }
         });
         
 }
@@ -163,6 +166,7 @@ function turnOnX10(devices, onValue){
             headers: {"X-CSRFToken": csrftoken},
             success: function(result) {
                 console.log('success');
+                startX10Refresh();
             },
             error: function(result) {
                 console.log('error');
@@ -180,6 +184,7 @@ function turnOffX10(devId){
         headers: {"X-CSRFToken": csrftoken},
         success: function(result) {
             console.log('success');
+            startX10Refresh();
         },
         error: function(result) {
             console.log('error');
@@ -313,7 +318,7 @@ function updateError(checkbox, err){
             </td>
             <td>
                 <label style="float: left;">
-                    Family Room Decorations
+                    Family Room NE Outlet
                 </label>
             </td>
             <td>

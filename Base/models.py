@@ -69,12 +69,58 @@ class D1Mini(models.Model):
     @classmethod
     def create(cls, mac_id):
         """used to instantiate a new D1Mini, not sure we need this but
-        some website suggested it would solve a problem.
-        need fo find usages"""
+           some website suggested it would solve a problem.
+           need fo find usages"""
         d1_mini = cls(
             mac_id=mac_id
         )
         return d1_mini
+
+
+class Controllable(models.Model):
+    """administrative configuration to constrain and define
+       the controllable capabilityof a device"""
+    device = models.ForeignKey(D1Mini)
+    # mask of digital pins that can be controlled
+    digital_controls = models.CharField(max_length=32)
+
+    def __str__(self):
+        return self.device.mac_id
+
+    @classmethod
+    def create(cls, mini, controllable_pins):
+        """used to instantiate a controllable object"""
+        controllable = cls(
+            device=mini,
+            digital_controls=controllable_pins
+        )
+        return controllable
+
+
+class DigitalState(models.Model):
+    """stores the state of a digital pin
+       commands are used to invoke change
+       events reported from the device can also lead to updates"""
+    device = models.ForeignKey(D1Mini)
+    pin_id = models.SmallIntegerField(default=-1)
+    alias = models.CharField(max_length=50)
+    is_high = models.BooleanField(default=False)
+    is_inverse = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.device.mac_id
+
+    @classmethod
+    def create(cls, device_new, pin_id_new, alias_new, is_high_new, is_inverse_new):
+        """used to instantiate a new DigitalState"""
+        state = cls(
+            device=device_new,
+            pin_id=pin_id_new,
+            alias=alias_new,
+            is_high=is_high_new,
+            is_inverse=is_inverse_new
+        )
+        return state
 
 
 class D1MiniCommand(models.Model):
@@ -141,6 +187,7 @@ class D1MiniEvent(models.Model):
 
 class D1MiniReadingManager(models.Manager):
     """exposes some useful filters on readings"""
+
     def humidity_readings_for_mini(self, mini):
         """Return a queryset of humidity readings for a pk"""
         return super(D1MiniReadingManager, self).get_queryset().filter(
@@ -184,4 +231,25 @@ class D1MiniReading(models.Model):
         return d1_mini_reading
 
     objects = D1MiniReadingManager()
+
+
+class KeyStore(models.Model):
+    """I need a way to store credentials and other details
+    rather than have them in config files i'll store them in the db"""
+    key_name = models.CharField(max_length=50)
+    key_value = models.CharField(max_length=200)
+
+    def __str__(self):
+        return "pk={0}".format(self.pk)
+
+    @classmethod
+    def create(cls,
+               key_name,
+               key_value):
+        """used to store and edit key value pairs"""
+        key_entry = cls(
+            key_name=key_name,
+            key_value=key_value
+        )
+        return key_entry
 

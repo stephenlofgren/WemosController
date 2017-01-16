@@ -25,7 +25,7 @@ SECRET_KEY = '(6i*b5kyh!fk367m)zqrvdn*8=7o1j&ib&d0(h3*8a2yswk1r6'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0','localhost','127.0.0.1','10.10.10.2','*']
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1', '10.10.10.2', '*']
 
 
 # Application definition
@@ -56,7 +56,8 @@ ROOT_URLCONF = 'WemosController.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, "templates")],
+        'DIRS': [os.path.join(BASE_DIR, "templates"),
+                 os.path.join(BASE_DIR, "Manage/templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -122,7 +123,10 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "lib/python3.5/site-packages/rest_framework/static"),
+    os.path.join(
+        BASE_DIR, "lib/python3.5/site-packages/rest_framework/static"),
+    os.path.join(
+        BASE_DIR, "Manage/static"),
 )
 
 LOGIN_URL = 'WemosController_login'

@@ -50,7 +50,7 @@ urlpatterns += [
     url(r'ZWave/turnOn/([0-9,]+)/([0-9]{1,2})$', ZWaveView.turn_on),
     url(r'ZWave/turnOff/([0-9,]+)', ZWaveView.turn_off),
     url(r'ZWave/status/$', ZWaveView.status),
-    url(r'ZWave/status/([0-9,]+)$', ZWaveView.status),
+    url(r'ZWave/status/([0-9]{1,2})$', ZWaveView.status),
 ]
 
 

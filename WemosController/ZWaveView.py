@@ -18,12 +18,12 @@ from Base.models import KeyStore
 class ZWaveView(APIView):
     """defines views for each of the http verbs"""
 
-    def auth(self, session = None):
+    def auth(self, session=None):
         """turns on to an optional level"""
         if session == None:
             session = requests.Session()
 
-        #get creds from database
+        # get creds from database
         keys = KeyStore.objects.all()
         user_key = keys.filter(key_name="ZWaveUser")
         user = user_key[0].key_value
@@ -85,10 +85,12 @@ class ZWaveView(APIView):
     def status(self, pk=None):
         """returns the status"""
         session = requests.Session()
-        (user_name, password, auth_token_string) = ZWaveView.auth(self, session)
-        session.auth = (user_name, password)
+        auth_details = ZWaveView.auth(self, session)
+        user_name = auth_details[0]
+        password = auth_details[1]
 
-        url = "http://192.168.2.18:3100/getDeviceLevel/%s" % pk
+        url = "https://192.168.2.18:3101/getDeviceLevel/%s" % pk
+        print(url)
 
         headers = {
             'Accept': "application/json",
@@ -97,17 +99,23 @@ class ZWaveView(APIView):
         }
 
         session.headers.update(headers)
-        response = session.get(url, headers=headers, verify=False)
+        response = requests.get(url, headers=headers, auth=HTTPBasicAuth(
+            user_name, password), verify=False)
+
+        session.close()
 
         message = json.loads(response.text)
         return Response(message)
-
 
     @api_view(['PUT'])
     @renderer_classes((JSONRenderer,))
     @permission_classes((permissions.AllowAny,))
     def turn_off(self, device_code):
         """turns on to an optional level"""
+        session = requests.Session()
+        (user_name, password, auth_token_string) = ZWaveView.auth(self, session)
+        session.auth = (user_name, password)
+
         url = "https://192.168.2.18:3101/setDeviceLevel"
 
         payload = "{\"nodeId\": \"%s\", \"deviceLevel\": \"0\"}" % device_code
@@ -116,12 +124,12 @@ class ZWaveView(APIView):
             'accept': "application/json",
             'x-http-method-override': "POST",
             'content-type': "application/json",
-            'Authorization': "Basic c3RlcGhlbjoyNzlTdGV2ZQ==",
             'cache-control': "no-cache",
             'postman-token': "c259a9f5-bb74-fea6-d3c9-a05a6b513e78"
         }
 
-        response = requests.post(url, data=payload, headers=headers, verify=False)
+        response = session.post(
+            url, data=payload, headers=headers, verify=False)
 
         message = json.loads(response.text)
         return Response(message)
@@ -131,6 +139,10 @@ class ZWaveView(APIView):
     @permission_classes((permissions.AllowAny,))
     def turn_on(self, device_code, on_level=99):
         """turns on to an optional level"""
+        session = requests.Session()
+        (user_name, password, auth_token_string) = ZWaveView.auth(self, session)
+        session.auth = (user_name, password)
+
         url = "https://192.168.2.18:3101/setDeviceLevel"
 
         payload = "{\"nodeId\": \"%s\", \"deviceLevel\": \"%d\"}" % (
@@ -139,12 +151,12 @@ class ZWaveView(APIView):
         headers = {
             'accept': "application/json",
             'content-type': "application/json",
-            'Authorization': "Basic c3RlcGhlbjoyNzlTdGV2ZQ==",
             'cache-control': "no-cache",
             'postman-token': "c259a9f5-bb74-fea6-d3c9-a05a6b513e78"
         }
 
-        response = requests.post(url, data=payload, headers=headers, verify=False)
+        response = session.post(
+            url, data=payload, headers=headers, verify=False)
 
         message = json.loads(response.text)
 

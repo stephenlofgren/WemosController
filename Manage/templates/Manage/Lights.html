@@ -83,10 +83,11 @@ function setx10CheckboxValue(element, x10Status){
 }
 
 function setZwaveCheckboxValue(element){
-    var isOn = true;
+    element.checked = true;
     var csrftoken = getCookie('csrftoken');
     if(ZwaveDevices != null){
         var devs = ZwaveDevices.split(",");
+        mutex = 0
         devs.forEach(function(devId) { 
             serviceUrl = "/ZWave/status/" + devId
             $.ajax({
@@ -95,17 +96,17 @@ function setZwaveCheckboxValue(element){
                 type: 'GET',
                 success: function(result) {
                     if(result.responseObject.level == 0){
-                        isOn = false
+                        element.checked = false;
                     }
                     console.log(result);
                 },
                 error: function(result) {
                     console.log('error');
+                    console.log(result);
                 }
             });
         });
     }
-    element.checked = isOn;
 }
 
 function updateLevels(element){
@@ -258,7 +259,7 @@ function updateError(checkbox, err){
         <tr>
             <td>
                 <label style="float: left" class="switch">
-                    <input type="checkbox" ZWaveDeviceIds="13" ZwaveOnLevel="99" value="1" onclick="updateLevels(this)" />
+                    <input type="checkbox" ZWaveDeviceIds="13" ZwaveOnLevel="99" onclick="updateLevels(this)" />
                     <div class="slider round"></div>
                 </label>
             </td>

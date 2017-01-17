@@ -56,12 +56,12 @@ urlpatterns += [
 
 # Routers provide an easy way of automatically determining the URL conf.
 ROUTER = routers.DefaultRouter()
-ROUTER.register(r'[^/]*/users', UserViewSet)
-ROUTER.register(r'[^/]*/D1Minis', D1MiniViewSet)
-ROUTER.register(r'[^/]*/Commands', D1MiniCommandViewSet)
-ROUTER.register(r'[^/]*/Events', D1MiniEventViewSet)
-ROUTER.register(r'[^/]*Readings', D1MiniReadingViewSet)
-ROUTER.register(r'[^/]*Charts', D1MiniChartsViewSet)
+ROUTER.register(r'users', UserViewSet)
+ROUTER.register(r'D1Minis', D1MiniViewSet)
+ROUTER.register(r'Commands', D1MiniCommandViewSet)
+ROUTER.register(r'Events', D1MiniEventViewSet)
+ROUTER.register(r'Readings', D1MiniReadingViewSet)
+ROUTER.register(r'Charts', D1MiniChartsViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

@@ -3,8 +3,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from WemosController.serializerclasses import D1MiniCommandSerializer
-from Base.models import D1MiniCommand, D1Mini
-
+from Base.models import D1MiniCommand, D1Mini, DigitalState
 
 # ViewSets define the view behavior.
 class D1MiniCommandViewSet(viewsets.GenericViewSet):
@@ -88,7 +87,16 @@ class D1MiniCommandViewSet(viewsets.GenericViewSet):
             if data['acknowledged'] is not None:
                 mini.acknowledged = bool(data['acknowledged'])
                 mini.save()
-            if data['pin_level'] is not None:
+
+                stateset = DigitalState.objects.all()
+                existingstate = stateset.filter(device=mini.device, pin_id=mini.pin_id)
+                if len(existingstate) == 1:
+                    existingstate = existingstate[0]
+                    existingstate.is_high = mini.pin_level == 1
+                else:
+                    existingstate = DigitalState.create(mini.device, mini.pin_id, '', mini.pin_level == 1, False)
+                existingstate.save()
+            if 'pin_level' in data and data['pin_level'] is not None:
                 mini.pin_level = data['pin_level']
                 mini.save()
         serializer_class = D1MiniCommandSerializer(

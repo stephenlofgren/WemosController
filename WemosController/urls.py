@@ -17,7 +17,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework import routers
 from Base.models import D1Mini, D1MiniCommand, D1MiniEvent, D1MiniReading
-from Base.models import KeyStore
+from Base.models import KeyStore, DigitalState
 from WemosController.D1MiniViewSet import UserViewSet
 from WemosController.D1MiniViewSet import D1MiniViewSet
 from WemosController.D1MiniCommandViewSet import D1MiniCommandViewSet
@@ -34,6 +34,7 @@ admin.site.register(D1MiniCommand)
 admin.site.register(D1MiniEvent)
 admin.site.register(D1MiniReading)
 admin.site.register(KeyStore)
+admin.site.register(DigitalState)
 
 urlpatterns = [
     url(r'admin/', admin.site.urls),

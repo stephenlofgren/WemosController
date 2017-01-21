@@ -228,6 +228,30 @@ function setLevelZWave(devId, onValue){
     });
 }
 
+function setLevel8266(devId, onValue){
+    var csrftoken = getCookie('csrftoken');
+    var serviceUrl = "/Commands/";
+
+
+    $.ajax({
+        url: serviceUrl,
+        headers: {
+            "X-CSRFToken": csrftoken,
+            "content-type": "application/json",
+            "authorization": "Basic V2Vtb3NDb250cm9sbGVyOm15Y29udHJvbA=="
+        },
+        data: "{\n    \"device\": " + devId + ",\n    \"pin_id\": 12,\n    \"pin_mode\": 1,\n    \"pin_level\": " + onValue + ",\n    \"acknowledged\": false\n\n}",
+        type: 'POST',
+        success: function(result) {
+            console.log('success');
+        },
+        error: function(result) {
+            console.log('error');
+        }
+    });
+
+}
+
 function updateError(checkbox, err){
     var checkBox = $("input:checkbox[value=" + checkbox.value + "]")
     checkBox.prop("checked", !checkbox.checked);
@@ -315,6 +339,22 @@ function updateError(checkbox, err){
             <td>
                 <label style="float: left" class="switch">
                     <input type="checkbox" x10DeviceIds="4" x10OnLevel="99" value="1" onclick="updateLevels(this)" />
+                    <div class="slider round"></div>
+                </label>
+            </td>
+            <td>
+                <label style="float: left;">
+                    Family Room NE Outlet
+                </label>
+            </td>
+            <td>
+                <label class="error" style="float: left;" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label style="float: left" class="switch">
+                    <input type="checkbox" esp8266DeviceIds="2" onclick="updateLevels(this)" />
                     <div class="slider round"></div>
                 </label>
             </td>

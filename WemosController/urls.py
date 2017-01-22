@@ -24,6 +24,7 @@ from WemosController.D1MiniCommandViewSet import D1MiniCommandViewSet
 from WemosController.D1MiniEventViewSet import D1MiniEventViewSet
 from WemosController.D1MiniReadingViewSet import D1MiniReadingViewSet
 from WemosController.D1MiniChartsViewSet import D1MiniChartsViewSet
+from WemosController.DigitalStateViewSet import DigitalStateViewSet
 from WemosController.X10View import X10View
 from WemosController.ZWaveView import ZWaveView
 
@@ -62,6 +63,7 @@ ROUTER.register(r'D1Minis', D1MiniViewSet)
 ROUTER.register(r'Commands', D1MiniCommandViewSet)
 ROUTER.register(r'Events', D1MiniEventViewSet)
 ROUTER.register(r'Readings', D1MiniReadingViewSet)
+ROUTER.register(r'DigitalState', DigitalStateViewSet)
 ROUTER.register(r'Charts', D1MiniChartsViewSet)
 
 # Wire up our API using automatic URL routing.

@@ -1,7 +1,8 @@
 """defines serializers for data models"""
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from Base.models import D1Mini, D1MiniCommand, D1MiniEvent, D1MiniReading
+from Base.models import D1Mini, D1MiniCommand, D1MiniEvent
+from Base.models import D1MiniReading, DigitalState
 
 
 # Serializers define the API representation.
@@ -41,5 +42,12 @@ class D1MiniReadingSerializer(serializers.HyperlinkedModelSerializer):
         model = D1MiniReading
         fields = ('pk', 'device', 'reading_type', 'reading_value',
                   'reading_unit', 'date_reading')
+
+
+class DigitalStateSerializer(serializers.HyperlinkedModelSerializer):
+    """defines the fields that will be serialized into json"""
+    class Meta:
+        model = DigitalState
+        fields = ('pk', 'device', 'pin_id', 'is_high')
 
 

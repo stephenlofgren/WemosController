@@ -16,6 +16,7 @@ $(document).ready(function(){
 function startRefresh(){
     startX10Refresh();
     startZwaveRefresh();
+    startEsp8266Refresh();
 }
 
 function startX10Refresh(){
@@ -42,15 +43,7 @@ function startZwaveRefresh(){
 
 function startEsp8266Refresh(){
     $('input[type=checkbox]').each(function () {
-        x10Devices = this.getAttribute("x10DeviceIds");
-        ZwaveDevices = this.getAttribute("ZWaveDeviceIds");
         esp8266Devices = this.getAttribute("esp8266DeviceIds");
-        if(x10Devices != null){
-            setx10CheckboxValue(this, x10Status);
-        }
-        if(ZwaveDevices != null){
-            setZwaveCheckboxValue(this);
-        }
         if(esp8266Devices != null){
             setesp8266CheckboxValue(this);
         }
@@ -101,6 +94,33 @@ function setZwaveCheckboxValue(element){
                 type: 'GET',
                 success: function(result) {
                     if(result.responseObject.level == 0){
+                        element.checked = false;
+                    }
+                    console.log(result);
+                },
+                error: function(result) {
+                    console.log('error');
+                    console.log(result);
+                }
+            });
+        });
+    }
+}
+
+function setesp8266CheckboxValue(element){
+    element.checked = true;
+    var csrftoken = getCookie('csrftoken');
+    if(esp8266Devices != null){
+        var devs = esp8266Devices.split(",");
+        mutex = 0
+        devs.forEach(function(devId) { 
+            serviceUrl = "/DigitalState?device=" + devId
+            $.ajax({
+                url: serviceUrl,
+                headers: {"X-CSRFToken": csrftoken},
+                type: 'GET',
+                success: function(result) {
+                    if(!result[0].is_high){
                         element.checked = false;
                     }
                     console.log(result);
@@ -354,7 +374,7 @@ function updateError(checkbox, err){
         <tr>
             <td>
                 <label style="float: left" class="switch">
-                    <input type="checkbox" esp8266DeviceIds="3" onclick="updateLevels(this)" />
+                    <input type="checkbox" esp8266DeviceIds="1" onclick="updateLevels(this)" />
                     <div class="slider round"></div>
                 </label>
             </td>

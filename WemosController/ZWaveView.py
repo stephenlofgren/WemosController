@@ -54,82 +54,49 @@ class ZWaveView(APIView):
                 we will need it when we have to invalidate old tokens"""
                 auth_token[0].key_value = auth_token_string
                 auth_token[0].save()
+            session.close()
             return (user, password, auth_token[0].key_value)
         else:
+            session.close()
             return (user, password, auth_token[0].key_value)
-
-    @api_view(['GET'])
-    @renderer_classes((JSONRenderer,))
-    @permission_classes((permissions.AllowAny,))
-    def statusDirect(self, pk):
-        """returns the status"""
-        session = requests.Session()
-        (user_name, password, auth_token_string) = ZWaveView.auth(self, session)
-        session.auth = (user_name, password)
-
-        url = "http://192.168.2.18/api/device/%s/" % pk
-        headers = {
-            'Authorization': ("Token %s" % auth_token_string),
-            'Accept': "application/json"
-        }
-        session.headers.update(headers)
-
-        response = session.request("GET", url)
-
-        message = json.loads(response.text)
-        return Response(message)
 
     @api_view(['GET'])
     @renderer_classes((JSONRenderer,))
     @permission_classes((permissions.AllowAny,))
     def status(self, pk=None):
         """returns the status"""
-        session = requests.Session()
-        auth_details = ZWaveView.auth(self, session)
-        user_name = auth_details[0]
-        password = auth_details[1]
+        (user_name, password, auth_token_string) = ZWaveView.auth(self)
 
-        url = "https://192.168.2.18:3101/getDeviceLevel/%s" % pk
-        print(url)
-
+        url = "http://192.168.2.18/api/device/%s" % pk
         headers = {
-            'Accept': "application/json",
-            'Content-Type': "application/json",
-            'cache-control': "no-cache",
+            'accept': "application/json",
+            'content-type': "text/json",
+            'Authorization': "Token " + auth_token_string,
+            'Accept': "application/json"
         }
 
-        session.headers.update(headers)
-        response = requests.get(url, headers=headers, auth=HTTPBasicAuth(
-            user_name, password), verify=False)
-
-        session.close()
+        response = requests.request("GET", url, headers=headers)
 
         message = json.loads(response.text)
         return Response(message)
 
+
     @api_view(['PUT'])
     @renderer_classes((JSONRenderer,))
     @permission_classes((permissions.AllowAny,))
-    def turn_off(self, device_code):
-        """turns on to an optional level"""
-        session = requests.Session()
-        (user_name, password, auth_token_string) = ZWaveView.auth(self, session)
-        session.auth = (user_name, password)
+    def turn_off(self, device_code=None):
+        """returns the status"""
+        (user_name, password, auth_token_string) = ZWaveView.auth(self)
 
-        url = "https://192.168.2.18:3101/setDeviceLevel"
-
-        payload = "{\"nodeId\": \"%s\", \"deviceLevel\": \"0\"}" % device_code
-
+        url = "http://192.168.2.18/api/setdevicelevel/%s/0" % device_code
         headers = {
             'accept': "application/json",
-            'x-http-method-override': "POST",
-            'content-type': "application/json",
-            'cache-control': "no-cache",
-            'postman-token': "c259a9f5-bb74-fea6-d3c9-a05a6b513e78"
+            'content-type': "text/json",
+            'Authorization': "Token " + auth_token_string,
+            'Accept': "application/json"
         }
 
-        response = session.post(
-            url, data=payload, headers=headers, verify=False)
+        response = requests.request("POST", url, headers=headers)
 
         message = json.loads(response.text)
         return Response(message)
@@ -138,29 +105,19 @@ class ZWaveView(APIView):
     @renderer_classes((JSONRenderer,))
     @permission_classes((permissions.AllowAny,))
     def turn_on(self, device_code, on_level=99):
-        """turns on to an optional level"""
-        session = requests.Session()
-        (user_name, password, auth_token_string) = ZWaveView.auth(self, session)
-        session.auth = (user_name, password)
+        """returns the status"""
+        (user_name, password, auth_token_string) = ZWaveView.auth(self)
 
-        url = "https://192.168.2.18:3101/setDeviceLevel"
-
-        payload = "{\"nodeId\": \"%s\", \"deviceLevel\": \"%d\"}" % (
-            device_code, int(on_level))
-
+        url = "http://192.168.2.18/api/setdevicelevel/" + device_code + "/" + on_level
         headers = {
             'accept': "application/json",
-            'content-type': "application/json",
-            'cache-control': "no-cache",
-            'postman-token': "c259a9f5-bb74-fea6-d3c9-a05a6b513e78"
+            'content-type': "text/json",
+            'Authorization': "Token " + auth_token_string,
+            'Accept': "application/json"
         }
 
-        response = session.post(
-            url, data=payload, headers=headers, verify=False)
+        response = requests.request("POST", url, headers=headers)
 
         message = json.loads(response.text)
+        return Response(message)
 
-        if message["message"] == 'Failed':
-            return Response(status=500)
-        else:
-            return Response(message)

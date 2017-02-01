@@ -231,20 +231,25 @@ function getCookie(name) {
     return cookieValue;
 }
 
-function setLevelZWave(devId, onValue){
-    var serviceUrl = "/ZWave/turnOn/" + devId + "/" + onValue
+function setLevelZWave(devices, onValue){
+    var devs = devices.split(",")
     var csrftoken = getCookie('csrftoken');
+    devs.forEach(function(devId) {
+    
+        var serviceUrl = "/ZWave/turnOn/" + devId + "/" + onValue
+        var csrftoken = getCookie('csrftoken');
         
-    $.ajax({
-        url: serviceUrl,
-        headers: {"X-CSRFToken": csrftoken},
-        type: 'PUT',
-        success: function(result) {
-            console.log('success');
-        },
-        error: function(result) {
-            console.log('error');
-        }
+        $.ajax({
+            url: serviceUrl,
+            headers: {"X-CSRFToken": csrftoken},
+            type: 'PUT',
+            success: function(result) {
+                console.log('success');
+            },
+            error: function(result) {
+                console.log('error');
+            }
+        });
     });
 }
 

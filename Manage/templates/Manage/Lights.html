@@ -16,7 +16,8 @@ $(document).ready(function(){
 function startRefresh(){
     startX10Refresh();
     startZwaveRefresh();
-    startEsp8266Refresh();
+    //startEsp8266Refresh();
+    startHomeAssistantRefresh();
 }
 
 function startX10Refresh(){
@@ -46,6 +47,15 @@ function startEsp8266Refresh(){
         esp8266Devices = this.getAttribute("esp8266DeviceIds");
         if(esp8266Devices != null){
             setesp8266CheckboxValue(this);
+        }
+    });
+}
+
+function startHomeAssistantRefresh(){
+    $('input[type=checkbox]').each(function () {
+        homeAssistDevices = this.getAttribute("homeAssistDeviceIds");
+        if(homeAssistDevices != null){
+            setHomeAssistantCheckboxValue(this);
         }
     });
 }
@@ -133,13 +143,41 @@ function setesp8266CheckboxValue(element){
         });
     }
 }
+function setHomeAssistantCheckboxValue(element){
+  element.checked = true;
+    var csrftoken = getCookie('csrftoken');
+    if(homeAssistDevices != null){
+        var devs = homeAssistDevices.split(",");
+        mutex = 0
+        devs.forEach(function(devId) { 
+            serviceUrl = "/HA/status/" + devId
+            $.ajax({
+                url: serviceUrl,
+                headers: {"X-CSRFToken": csrftoken},
+                type: 'GET',
+                success: function(result) {
+                    if(result.state != "on"){
+                        element.checked = false;
+                    }
+                    console.log(result);
+                },
+                error: function(result) {
+                    console.log('error');
+                    console.log(result);
+                }
+            });
+        });
+    }
+}
 
 function updateLevels(element){
     x10Devices = element.getAttribute("x10DeviceIds");
     ZwaveDevices = element.getAttribute("ZWaveDeviceIds");
     esp8266Devices = element.getAttribute("esp8266DeviceIds");
+    homeAssistDevices = element.getAttribute("homeAssistDeviceIds");
     x10OnLevel = element.getAttribute("x10OnLevel");
     ZwaveOnLevel = element.getAttribute("ZwaveOnLevel");
+    homeAssistOnLevel = element.getAttribute("homeAssistOnLevel");
     //esp8266 devices don't currrenlty support onlevel
     //esp8266OnLevel = element.getAttribute("esp8266OnLevel");
     
@@ -150,6 +188,15 @@ function updateLevels(element){
             }
             else {
                 setLevelZWave(ZwaveDevices, 0);
+            }
+        }
+
+        if(homeAssistDevices != null){
+            if(element.checked){
+                turnOnHomeAssist(homeAssistDevices, homeAssistOnLevel);
+            }
+            else {
+                turnOffHomeAssist(homeAssistDevices);
             }
         }
         
@@ -199,6 +246,42 @@ function turnOnX10(devices, onValue){
 
 function turnOffX10(devId){
     var serviceUrl = "/x10/turnOff/A/" + devId
+    var csrftoken = getCookie('csrftoken');
+    $.ajax({
+        url: serviceUrl,
+        type: 'PUT',
+        headers: {"X-CSRFToken": csrftoken},
+        success: function(result) {
+            console.log('success');
+            startX10Refresh();
+        },
+        error: function(result) {
+            console.log('error');
+        }
+    });
+}
+function turnOnHomeAssist(devices, onValue){
+    var devs = devices.split(",")
+    var csrftoken = getCookie('csrftoken');
+    devs.forEach(function(devId) {
+        var serviceUrl = "/HA/turnOn/" + devId +"/" + onValue
+        $.ajax({
+            url: serviceUrl,
+            type: 'PUT',
+            headers: {"X-CSRFToken": csrftoken},
+            success: function(result) {
+                console.log('success');
+                startX10Refresh();
+            },
+            error: function(result) {
+                console.log('error');
+            }
+        });
+    });
+}
+
+function turnOffHomeAssist(devId){
+    var serviceUrl = "/HA/turnOff/" + devId
     var csrftoken = getCookie('csrftoken');
     $.ajax({
         url: serviceUrl,
@@ -312,28 +395,10 @@ function updateError(checkbox, err){
                 <label class="error" style="float: left;" />
             </td>
         </tr>
-<!--
         <tr>
             <td>
                 <label style="float: left" class="switch">
-                    <input type="checkbox" ZWaveDeviceIds="13" ZwaveOnLevel="99" onclick="updateLevels(this)" />
-                    <div class="slider round"></div>
-                </label>
-            </td>
-            <td>
-                <label style="float: left;">
-                    Family Room Floor Lamp
-                </label>
-            </td>
-            <td>
-                <label class="error" style="float: left;" />
-            </td>
-        </tr>
--->
-        <tr>
-            <td>
-                <label style="float: left" class="switch">
-                    <input type="checkbox" esp8266DeviceIds="3" onclick="updateLevels(this)" />
+                    <input type="checkbox" homeAssistDeviceIds="light.act_zdp100_plugin_lamp_module_level_4_0" homeAssistOnLevel="255" onclick="updateLevels(this)" />
                     <div class="slider round"></div>
                 </label>
             </td>

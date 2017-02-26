@@ -27,6 +27,7 @@ from WemosController.D1MiniChartsViewSet import D1MiniChartsViewSet
 from WemosController.DigitalStateViewSet import DigitalStateViewSet
 from WemosController.X10View import X10View
 from WemosController.ZWaveView import ZWaveView
+from WemosController.HomeAssistantView import HomeAssistantView
 
 from Manage.views import lights
 
@@ -53,6 +54,12 @@ urlpatterns += [
     url(r'ZWave/turnOff/([0-9,]+)', ZWaveView.turn_off),
     url(r'ZWave/status/$', ZWaveView.status),
     url(r'ZWave/status/([0-9]{1,2})$', ZWaveView.status),
+
+    url(r'HA/turnOn/([a-z,A-Z,0-9,\.,_]*)$', HomeAssistantView.turn_on),
+    url(r'HA/turnOn/([a-z,A-Z,0-9,\.,_]*)/([0-9]{1,3})$', HomeAssistantView.turn_on),
+    url(r'HA/turnOff/([a-z,A-Z,0-9,\.,_]*)', HomeAssistantView.turn_off),
+    url(r'HA/status/$', HomeAssistantView.status),
+    url(r'HA/status/([a-z,A-Z,0-9,\.,_]*)$', HomeAssistantView.status),
 ]
 
 

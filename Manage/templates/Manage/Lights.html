@@ -159,7 +159,7 @@ function setHomeAssistantCheckboxValue(element){
                     if(result.state != "on"){
                         element.checked = false;
                     }
-                    console.log(result);
+                    //console.log(result);
                 },
                 error: function(result) {
                     console.log('error');
@@ -270,8 +270,7 @@ function turnOnHomeAssist(devices, onValue){
             type: 'PUT',
             headers: {"X-CSRFToken": csrftoken},
             success: function(result) {
-                console.log('success');
-                startX10Refresh();
+                //console.log('success');
             },
             error: function(result) {
                 console.log('error');
@@ -288,8 +287,7 @@ function turnOffHomeAssist(devId){
         type: 'PUT',
         headers: {"X-CSRFToken": csrftoken},
         success: function(result) {
-            console.log('success');
-            startX10Refresh();
+            //console.log('success');
         },
         error: function(result) {
             console.log('error');
@@ -382,13 +380,13 @@ function updateError(checkbox, err){
         <tr>
             <td>
                 <label style="float: left" class="switch">
-                    <input type="checkbox" ZWaveDeviceIds="17,18" ZwaveOnLevel="50" onclick="updateLevels(this)" />
+                    <input type="checkbox" homeAssistDeviceIds="light.linear_pd300z2_plugin_dimmer_module_level_6_0,light.linear_pd300z2_plugin_dimmer_module_level_7_0" homeAssistOnLevel="50" onclick="updateLevels(this)" />
                     <div class="slider round"></div>
                 </label>
             </td>
             <td>
                 <label style="float: left;">
-                    Family Room Wall Lamps
+                    Wall Lamps
                 </label>
             </td>
             <td>
